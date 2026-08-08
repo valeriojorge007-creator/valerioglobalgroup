@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valerio Global Group — Prototipo Funcional V3</title>
+<style>
+:root{
+  --navy:#06172b;--navy2:#0b2341;--gold:#c9a15f;--gold2:#e2c27e;
+  --white:#f8fbff;--muted:#9fb0c3;--card:#0c2038;--line:rgba(201,161,95,.24);
+  --ok:#56c58e;--warn:#e0b457;--danger:#d96b6b;--blue:#63a4ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,var(--navy),#081b31 45%,#06172b);color:var(--white);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:50;background:rgba(6,23,43,.92);backdrop-filter:blur(15px);border-bottom:1px solid var(--line)}
+.nav{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:15px 22px}
+.brand{font-weight:900;letter-spacing:.12em}.brand span{color:var(--gold)}
+nav{display:flex;gap:12px;align-items:center}
+.btn{border:1px solid var(--gold);background:transparent;color:#fff;padding:10px 14px;border-radius:10px;transition:.2s}
+.btn:hover{background:rgba(201,161,95,.12)}
+.btn.gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#0c1c31;border:none;font-weight:800}
+.btn.danger{border-color:var(--danger);color:#ffdede}
+.btn.blue{border-color:var(--blue)}
+.section{max-width:1180px;margin:auto;padding:60px 22px}
+.hero{min-height:68vh;display:grid;place-items:center;text-align:center;padding:72px 22px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 50% 15%,rgba(201,161,95,.18),transparent 28%),radial-gradient(circle at 20% 75%,rgba(65,111,160,.14),transparent 25%),radial-gradient(circle at 80% 75%,rgba(65,111,160,.13),transparent 25%)}
+.hero>div{position:relative;max-width:900px}
+.kicker{color:var(--gold);font-size:12px;letter-spacing:.22em;font-weight:800}
+h1{font-size:clamp(46px,7vw,86px);line-height:.98;margin:15px 0}
+h2{font-size:clamp(30px,4vw,48px);margin:0 0 10px}
+.lead{color:#c8d3de;max-width:840px;line-height:1.6;font-size:18px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.badge{display:inline-block;border:1px solid var(--line);padding:5px 9px;border-radius:999px;color:var(--gold2);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+.card{background:linear-gradient(180deg,rgba(12,32,56,.97),rgba(7,25,46,.97));border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h3{color:var(--gold2);margin:3px 0 8px}.card p{color:#c0ccd8;line-height:1.55}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px}
+.metric{background:#0a213a;border:1px solid var(--line);padding:17px;border-radius:14px}.metric strong{display:block;color:var(--gold2);font-size:28px}
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:20px}
+.pipe{min-height:170px;background:#071a2e;border:1px solid rgba(201,161,95,.15);border-radius:12px;padding:10px}
+.pipe h4{font-size:11px;letter-spacing:.07em;color:var(--gold2);text-transform:uppercase}
+.ticket{background:#0d2a49;border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:9px;margin:8px 0;font-size:12px;cursor:pointer}
+.ticket:hover{outline:1px solid var(--gold)}
+.split{display:grid;grid-template-columns:250px 1fr;gap:18px;margin-top:22px}
+.sidebar{background:#071a2e;border:1px solid var(--line);border-radius:14px;padding:12px;height:max-content}
+.sidebar button{width:100%;text-align:left;background:transparent;border:0;color:#dfe8f1;padding:11px;border-radius:8px}
+.sidebar button.active,.sidebar button:hover{background:#0d2a49;color:var(--gold2)}
+.panel{background:#081c33;border:1px solid var(--line);border-radius:14px;padding:18px}
+.list{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:1.1fr .8fr .8fr .7fr auto;gap:10px;align-items:center;background:#071a2e;border:1px solid rgba(201,161,95,.12);padding:12px;border-radius:10px}
+.row small{color:var(--muted)}
+.status{font-size:11px;padding:5px 8px;border-radius:999px;border:1px solid var(--line);width:max-content}
+.overlay{position:fixed;inset:0;display:none;place-items:center;background:rgba(2,11,21,.78);backdrop-filter:blur(8px);z-index:100;padding:18px}
+.overlay.open{display:grid}
+.modal{width:min(860px,100%);max-height:88vh;overflow:auto;background:#081a30;border:1px solid var(--line);border-radius:18px;box-shadow:0 28px 90px rgba(0,0,0,.45);padding:20px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
+.msg{margin:15px 0;padding:13px 15px;border-radius:14px;background:#0d2948;border:1px solid rgba(201,161,95,.18);line-height:1.5}
+.quick{display:flex;flex-wrap:wrap;gap:9px}.quick button{border:1px solid var(--line);background:#0a223d;color:#eef5fd;padding:9px 11px;border-radius:999px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:12px}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;background:#071629;border:1px solid rgba(201,161,95,.25);color:#fff;border-radius:10px;padding:10px 11px}
+.form-grid textarea{grid-column:1/-1;min-height:90px}
+.hidden{display:none!important}
+.summary{background:#071629;border:1px solid var(--line);padding:14px;border-radius:12px;margin-top:12px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-box{background:#071a2e;border:1px solid rgba(201,161,95,.12);padding:12px;border-radius:10px}
+.detail-box b{color:var(--gold2)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.note{font-size:12px;color:var(--muted)}
+.login-card{max-width:520px;margin:20px auto;background:#081c33;border:1px solid var(--line);border-radius:16px;padding:22px}
+.login-card input,.login-card select{width:100%;background:#071629;border:1px solid rgba(201,161,95,.25);color:#fff;border-radius:10px;padding:11px;margin:6px 0}
+.role-chip{display:inline-block;padding:5px 8px;border-radius:999px;background:#0d2a49;border:1px solid var(--line);font-size:11px;color:var(--gold2)}
+.doc-item,.match-item{background:#071a2e;border:1px solid rgba(201,161,95,.12);padding:12px;border-radius:10px;margin:8px 0}
+.match-score{font-weight:800;color:var(--gold2)}
+.access-denied{border:1px solid var(--danger);color:#ffdede;padding:14px;border-radius:12px;background:rgba(217,107,107,.08)}
+footer{border-top:1px solid var(--line);padding:24px;text-align:center;color:var(--muted)}
+@media(max-width:950px){nav a{display:none}.grid{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr 1fr}.pipeline{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.grid,.form-grid,.detail-grid{grid-template-columns:1fr}.metrics,.pipeline{grid-template-columns:1fr}.row{grid-template-columns:1fr}.sidebar{grid-template-columns:1fr 1fr}h1{font-size:46px}}
+</style>
+</head>
+<body>
+<header>
+<div class="nav">
+  <div class="brand">VALERIO <span>GLOBAL GROUP</span></div>
+  <nav>
+    <a href="#inicio">Inicio</a><a href="#mineria">Minería</a><a href="#oportunidades">Oportunidades</a><a href="#portal">Portal VGG</a>
+    <span id="sessionLabel" class="role-chip">Visitante</span>
+    <button id="sessionBtn" class="btn" onclick="openLogin()">Acceso privado</button>
+    <button class="btn gold" onclick="openFenix()">Hablar con Fénix</button>
+  </nav>
+</div>
+</header>
+
+<section id="inicio" class="hero">
+<div>
+  <div class="kicker">VALERIO GLOBAL GROUP</div>
+  <h1>Si existe,<br>lo tenemos.</h1>
+  <p style="color:var(--gold2);font-size:22px;font-weight:800">If it exists, we have it.</p>
+  <p class="lead" style="margin:auto">Minería como pilar. Negocios sin fronteras.</p>
+  <div class="actions"><a href="#oportunidades" class="btn gold">Explorar oportunidades</a><button class="btn" onclick="openFenix()">Hablar con Fénix</button></div>
+</div>
+</section>
+
+<section id="mineria" class="section">
+<span class="badge">MINERÍA — NUESTRO PILAR</span>
+<h2>La minería es nuestro punto de partida.</h2>
+<p class="lead"><b>Transformamos oportunidades en resultados de éxito.</b> Esta V3 incorpora persistencia local, roles simulados, Data Room DEMO y Matching VGG básico.</p>
+<div class="grid">
+  <div class="card"><h3>Presentar proyecto</h3><p>Registra una oportunidad minera mediante Fénix.</p><button class="btn gold" onclick="setIntent('Proyecto minero')">Presentar proyecto</button></div>
+  <div class="card"><h3>Proyectos DEMO</h3><p>Las oportunidades reales se cargarán únicamente con autorización.</p><button class="btn" onclick="alert('DEMO: aquí irá el catálogo minero autorizado.')">Explorar</button></div>
+  <div class="card"><h3>Confidencialidad</h3><p>El acceso a documentos se simula según el rol del usuario.</p><button class="btn" onclick="openLogin()">Acceso privado</button></div>
+</div>
+</section>
+
+<section id="oportunidades" class="section">
+<span class="badge">CENTRO DE OPORTUNIDADES</span>
+<h2>¿Qué estás buscando?</h2>
+<div class="grid">
+  <div class="card"><h3>Comprar</h3><button class="btn" onclick="setIntent('Comprar')">Quiero comprar</button></div>
+  <div class="card"><h3>Vender</h3><button class="btn" onclick="setIntent('Vender')">Quiero vender</button></div>
+  <div class="card"><h3>Invertir</h3><button class="btn" onclick="setIntent('Invertir')">Quiero invertir</button></div>
+  <div class="card"><h3>Socios y alianzas</h3><button class="btn" onclick="setIntent('Buscar socio o aliado')">Buscar alianza</button></div>
+  <div class="card"><h3>Presentar oportunidad</h3><button class="btn" onclick="setIntent('Presentar oportunidad')">Presentar</button></div>
+  <div class="card"><h3>Hablar con un asesor</h3><button class="btn" onclick="setIntent('Hablar con un asesor')">Contactar</button></div>
+</div>
+</section>
+
+<section id="portal" class="section">
+<span class="badge">PORTAL PRIVADO VGG — V3</span>
+<h2>Dashboard Ejecutivo</h2>
+<p class="lead">Los datos del prototipo ahora persisten en <b>localStorage</b> del navegador. El rol simulado controla qué módulos y acciones puedes abrir.</p>
+
+<div id="portalLocked" class="access-denied">
+  Debes iniciar sesión en la simulación para usar el Portal VGG.
+</div>
+
+<div id="portalContent" class="hidden">
+  <div class="metrics">
+    <div class="metric"><strong id="mReceived">0</strong>Recibidas</div>
+    <div class="metric"><strong id="mReview">0</strong>En revisión</div>
+    <div class="metric"><strong id="mQualified">0</strong>Calificadas</div>
+    <div class="metric"><strong id="mNegotiation">0</strong>Negociación</div>
+    <div class="metric"><strong id="mClosed">0</strong>Cerradas</div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe"><h4>Recibida</h4><div id="p-Recibida"></div></div>
+    <div class="pipe"><h4>En revisión</h4><div id="p-En revisión"></div></div>
+    <div class="pipe"><h4>Calificada</h4><div id="p-Calificada"></div></div>
+    <div class="pipe"><h4>En contacto</h4><div id="p-En contacto"></div></div>
+    <div class="pipe"><h4>Negociación</h4><div id="p-Negociación"></div></div>
+    <div class="pipe"><h4>Cerrada</h4><div id="p-Cerrada"></div></div>
+  </div>
+
+  <div class="split">
+    <aside class="sidebar">
+      <button class="active" data-role="internal" onclick="showArea('opps',this)">Oportunidades</button>
+      <button data-role="internal" onclick="showArea('mining',this)">Minería</button>
+      <button data-role="internal" onclick="showArea('contacts',this)">Contactos</button>
+      <button onclick="showArea('docs',this)">Data Rooms</button>
+      <button data-role="internal" onclick="showArea('matching',this)">Matching</button>
+      <button data-role="admin" onclick="showArea('settings',this)">Configuración</button>
+    </aside>
+    <div class="panel">
+      <div id="area-opps"><h3>Oportunidades</h3><div id="opportunityList" class="list"></div></div>
+      <div id="area-mining" class="hidden"><h3>Minería</h3><div id="miningList"></div></div>
+      <div id="area-contacts" class="hidden"><h3>Contactos</h3><div id="contactList"></div></div>
+      <div id="area-docs" class="hidden"><h3>Data Rooms</h3><div id="dataRoomList"></div></div>
+      <div id="area-matching" class="hidden"><h3>Matching VGG</h3><div id="matchingList"></div></div>
+      <div id="area-settings" class="hidden"><h3>Configuración</h3><p class="note">Solo disponible para rol Administrador en esta simulación.</p><button class="btn danger" onclick="resetDemo()">Restablecer datos DEMO</button></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>VALERIOGLOBALGROUP S.A.S. · Prototipo funcional V3 · Persistencia local DEMO</footer>
+
+<!-- LOGIN -->
+<div id="loginOverlay" class="overlay" onclick="if(event.target===this)closeLogin()">
+<div class="modal" style="max-width:540px">
+  <div class="modal-head"><b style="color:var(--gold2)">Acceso privado VGG — DEMO</b><button class="btn" onclick="closeLogin()">Cerrar</button></div>
+  <div class="login-card">
+    <p class="note">No es autenticación real. Selecciona un rol para probar permisos.</p>
+    <input id="loginName" placeholder="Nombre de usuario" value="Usuario Demo">
+    <select id="loginRole">
+      <option value="admin">Administrador</option>
+      <option value="direction">Dirección</option>
+      <option value="commercial">Comercial</option>
+      <option value="external">Usuario externo autorizado</option>
+    </select>
+    <button class="btn gold" style="width:100%;margin-top:8px" onclick="loginDemo()">Entrar</button>
+  </div>
+</div>
+</div>
+
+<!-- FENIX -->
+<div id="fenixOverlay" class="overlay" onclick="if(event.target===this)closeFenix()">
+<div class="modal">
+  <div class="modal-head"><div><b style="color:var(--gold2)">FÉNIX</b> · Asistente VGG</div><button class="btn" onclick="closeFenix()">Cerrar</button></div>
+  <div id="fenixStart">
+    <div class="msg"><b>Hoy empezó tu oportunidad con este clic.</b><br>Bienvenido a Valerio Global Group. ¿Qué estás buscando?</div>
+    <div class="quick">
+      <button onclick="chooseIntent('Proyecto minero')">Proyecto minero</button>
+      <button onclick="chooseIntent('Comprar')">Comprar</button>
+      <button onclick="chooseIntent('Vender')">Vender</button>
+      <button onclick="chooseIntent('Invertir')">Invertir</button>
+      <button onclick="chooseIntent('Buscar socio o aliado')">Buscar socio o aliado</button>
+      <button onclick="chooseIntent('Presentar oportunidad')">Presentar oportunidad</button>
+      <button onclick="chooseIntent('Hablar con un asesor')">Hablar con un asesor</button>
+    </div>
+  </div>
+  <div id="fenixForm" class="hidden">
+    <div id="intentText" class="msg"></div>
+    <div class="form-grid">
+      <input id="fName" placeholder="Nombre">
+      <input id="fCompany" placeholder="Empresa (opcional)">
+      <input id="fCountry" placeholder="País / región">
+      <input id="fContact" placeholder="Correo o WhatsApp">
+      <input id="fDetail" placeholder="Mineral / producto / sector">
+      <select id="fNeed">
+        <option value="">Necesidad principal</option>
+        <option>Busco inversión</option><option>Busco comprador</option><option>Busco socio</option>
+        <option>Quiero vender</option><option>Quiero comprar</option><option>Necesito representación</option><option>Otra necesidad</option>
+      </select>
+      <textarea id="fDesc" placeholder="Describe brevemente la oportunidad"></textarea>
+    </div>
+    <div class="toolbar"><button class="btn gold" onclick="reviewFenix()">Revisar resumen</button><button class="btn" onclick="resetFenix()">Volver</button></div>
+  </div>
+  <div id="fenixReview" class="hidden">
+    <div class="msg">Esto es lo que entendí:</div>
+    <div id="fenixSummary" class="summary"></div>
+    <div class="toolbar"><button class="btn gold" onclick="confirmFenix()">Confirmar</button><button class="btn" onclick="editFenix()">Corregir</button><button class="btn" onclick="alert('DEMO: se derivaría al equipo humano con el contexto capturado.')">Hablar con un asesor</button></div>
+  </div>
+  <div id="fenixSuccess" class="hidden">
+    <div class="msg"><b style="color:var(--ok)">Tu oportunidad ha sido registrada correctamente.</b><br>Referencia: <b id="fenixRef"></b></div>
+    <div class="toolbar"><button class="btn gold" onclick="goPortal()">Ver en Dashboard</button><button class="btn" onclick="resetFenix()">Registrar otra</button></div>
+  </div>
+</div>
+</div>
+
+<!-- EXPEDIENTE -->
+<div id="caseOverlay" class="overlay" onclick="if(event.target===this)closeCase()">
+<div class="modal">
+  <div class="modal-head"><div><b id="caseTitle" style="color:var(--gold2)">Expediente VGG</b></div><button class="btn" onclick="closeCase()">Cerrar</button></div>
+  <div id="caseContent"></div>
+</div>
+</div>
+
+<script>
+const LS_OPPS="vgg_demo_opportunities_v3";
+const LS_SESSION="vgg_demo_session_v3";
+const LS_COUNTER="vgg_demo_counter_v3";
+
+let intent="", current=null;
+let opportunities=JSON.parse(localStorage.getItem(LS_OPPS)||"[]");
+let session=JSON.parse(localStorage.getItem(LS_SESSION)||"null");
+let counter=parseInt(localStorage.getItem(LS_COUNTER)||"1",10);
+
+const ROLE_LABELS={admin:"Administrador",direction:"Dirección",commercial:"Comercial",external:"Usuario externo autorizado"};
+
+function saveState(){
+  localStorage.setItem(LS_OPPS,JSON.stringify(opportunities));
+  localStorage.setItem(LS_COUNTER,String(counter));
+}
+function openLogin(){document.getElementById('loginOverlay').classList.add('open')}
+function closeLogin(){document.getElementById('loginOverlay').classList.remove('open')}
+function loginDemo(){
+  const name=loginName.value.trim()||"Usuario Demo", role=loginRole.value;
+  session={name,role};
+  localStorage.setItem(LS_SESSION,JSON.stringify(session));
+  closeLogin(); renderSession(); document.getElementById('portal').scrollIntoView({behavior:'smooth'});
+}
+function logoutDemo(){
+  session=null;localStorage.removeItem(LS_SESSION);renderSession();
+}
+function renderSession(){
+  if(session){
+    sessionLabel.textContent=session.name+" · "+ROLE_LABELS[session.role];
+    sessionBtn.textContent="Cerrar sesión";
+    sessionBtn.onclick=logoutDemo;
+    portalLocked.classList.add('hidden');portalContent.classList.remove('hidden');
+  }else{
+    sessionLabel.textContent="Visitante";
+    sessionBtn.textContent="Acceso privado";
+    sessionBtn.onclick=openLogin;
+    portalLocked.classList.remove('hidden');portalContent.classList.add('hidden');
+  }
+  enforceRoleUI(); renderAll();
+}
+function enforceRoleUI(){
+  document.querySelectorAll('[data-role]').forEach(el=>{
+    const need=el.dataset.role;
+    let allowed=false;
+    if(!session) allowed=false;
+    else if(need==="internal") allowed=session.role!=="external";
+    else if(need==="admin") allowed=session.role==="admin";
+    el.style.display=allowed?"block":"none";
+  });
+  if(session && session.role==="external") showAreaDirect('docs');
+  if(session && session.role!=="external") showAreaDirect('opps');
+}
+function openFenix(){fenixOverlay.classList.add('open')}
+function closeFenix(){fenixOverlay.classList.remove('open')}
+function setIntent(i){openFenix();chooseIntent(i)}
+function chooseIntent(i){
+  intent=i;fenixStart.classList.add('hidden');fenixForm.classList.remove('hidden');
+  let t="Cuéntame lo esencial para preparar una Ficha VGG.";
+  if(i==="Proyecto minero")t="Cuéntame lo esencial del proyecto. No necesito documentos confidenciales en este primer contacto.";
+  if(i==="Comprar")t="Indica qué buscas, dónde y las características principales.";
+  if(i==="Vender")t="Indica qué ofreces, ubicación y qué tipo de comprador buscas.";
+  if(i==="Invertir")t="Indica sector, región y modalidad de inversión preferida.";
+  if(i==="Buscar socio o aliado")t="Cuéntame qué aportas y qué necesitas de la contraparte.";
+  if(i==="Hablar con un asesor")t="Déjame tus datos y un resumen para que el equipo continúe contigo.";
+  intentText.innerHTML="<b>"+i+"</b><br>"+t;
+}
+function reviewFenix(){
+  current={name:fName.value.trim(),company:fCompany.value.trim(),country:fCountry.value.trim(),contact:fContact.value.trim(),detail:fDetail.value.trim(),need:fNeed.value,desc:fDesc.value.trim()};
+  if(!current.name||!current.contact||!current.desc){alert("Completa al menos nombre, contacto y descripción.");return}
+  fenixForm.classList.add('hidden');fenixReview.classList.remove('hidden');
+  fenixSummary.innerHTML="<b>Tipo:</b> "+intent+"<br><b>Nombre:</b> "+current.name+"<br>"+
+    (current.company?"<b>Empresa:</b> "+current.company+"<br>":"")+
+    (current.country?"<b>País/Región:</b> "+current.country+"<br>":"")+
+    "<b>Contacto:</b> "+current.contact+"<br>"+
+    (current.detail?"<b>Mineral/Producto/Sector:</b> "+current.detail+"<br>":"")+
+    (current.need?"<b>Necesidad:</b> "+current.need+"<br>":"")+
+    "<b>Resumen:</b> "+current.desc;
+}
+function editFenix(){fenixReview.classList.add('hidden');fenixForm.classList.remove('hidden')}
+function confirmFenix(){
+  const mining=intent==="Proyecto minero";
+  const code=(mining?"VGG-MIN-":"VGG-OPP-")+String(counter).padStart(4,"0");
+  counter++;
+  opportunities.push({code,intent,status:"Recibida",priority:"Normal",owner:"Sin asignar",created:new Date().toLocaleString(),isMining:mining,docs:mining?demoDocs(code):[],...current});
+  saveState(); fenixReview.classList.add('hidden');fenixSuccess.classList.remove('hidden');fenixRef.textContent=code;renderAll();
+}
+function resetFenix(){
+  intent="";current=null;['fenixForm','fenixReview','fenixSuccess'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  fenixStart.classList.remove('hidden');['fName','fCompany','fCountry','fContact','fDetail','fDesc'].forEach(id=>document.getElementById(id).value="");fNeed.value="";
+}
+function goPortal(){closeFenix();document.getElementById('portal').scrollIntoView({behavior:'smooth'});if(!session)openLogin()}
+
+function demoDocs(code){
+  return [
+    {name:"Ficha ejecutiva "+code+".pdf",level:"Restringida",category:"Comercial"},
+    {name:"Resumen técnico DEMO.pdf",level:"Confidencial",category:"Técnico"},
+    {name:"Mapa general DEMO.pdf",level:"Restringida",category:"Cartografía"}
+  ];
+}
+function renderAll(){
+  if(!session)return;
+  const statuses=["Recibida","En revisión","Calificada","En contacto","Negociación","Cerrada"];
+  statuses.forEach(s=>document.getElementById("p-"+s).innerHTML="");
+  opportunities.filter(o=>o.status!=="Archivada").forEach(o=>{
+    const d=document.createElement("div");d.className="ticket";d.innerHTML="<b>"+o.code+"</b><br>"+o.intent+"<br>"+o.name;
+    d.onclick=()=>openCase(o.code);document.getElementById("p-"+o.status).appendChild(d);
+  });
+  mReceived.textContent=opportunities.filter(x=>x.status==="Recibida").length;
+  mReview.textContent=opportunities.filter(x=>x.status==="En revisión").length;
+  mQualified.textContent=opportunities.filter(x=>x.status==="Calificada").length;
+  mNegotiation.textContent=opportunities.filter(x=>x.status==="Negociación").length;
+  mClosed.textContent=opportunities.filter(x=>x.status==="Cerrada").length;
+  renderOpportunityList(); renderMining(); renderContacts(); renderDataRooms(); renderMatching();
+}
+function renderOpportunityList(){
+  opportunityList.innerHTML="";
+  if(session.role==="external"){opportunityList.innerHTML="<p class='note'>Este rol no tiene acceso a oportunidades internas.</p>";return}
+  opportunities.slice().reverse().forEach(o=>{
+    const r=document.createElement("div");r.className="row";
+    r.innerHTML="<div><b>"+o.code+"</b><br><small>"+o.intent+"</small></div><div>"+o.name+"<br><small>"+(o.company||"Sin empresa")+"</small></div><div>"+(o.detail||"—")+"</div><div><span class='status'>"+o.status+"</span></div><div><button class='btn' onclick=\"openCase('"+o.code+"')\">Abrir expediente</button></div>";
+    opportunityList.appendChild(r);
+  });
+  if(!opportunities.length)opportunityList.innerHTML="<p class='note'>Todavía no hay oportunidades. Registra una desde Fénix.</p>";
+}
+function renderMining(){
+  const arr=opportunities.filter(o=>o.isMining);
+  miningList.innerHTML=arr.length?arr.map(o=>"<div class='doc-item'><b>"+o.code+"</b> · "+(o.detail||"Mineral no indicado")+" · "+o.status+"<br><small>"+o.country+"</small></div>").join(""):"<p class='note'>No hay proyectos mineros registrados.</p>";
+}
+function renderContacts(){
+  if(session.role==="external"){contactList.innerHTML="<p class='note'>Acceso no autorizado.</p>";return}
+  const seen={};opportunities.forEach(o=>seen[o.contact]={name:o.name,company:o.company,contact:o.contact,intent:o.intent});
+  contactList.innerHTML=Object.values(seen).map(c=>"<div class='doc-item'><b>"+c.name+"</b><br>"+(c.company||"")+"<br><small>"+c.contact+" · "+c.intent+"</small></div>").join("")||"<p class='note'>Sin contactos.</p>";
+}
+function renderDataRooms(){
+  const mining=opportunities.filter(o=>o.isMining);
+  if(!mining.length){dataRoomList.innerHTML="<p class='note'>No hay Data Rooms DEMO disponibles.</p>";return}
+  dataRoomList.innerHTML=mining.map(o=>{
+    let docs=o.docs||[];
+    if(session.role==="external") docs=docs.filter(d=>d.level!=="Confidencial");
+    return "<div class='doc-item'><b>"+o.code+" — Data Room</b><br>"+docs.map(d=>"• "+d.name+" <span class='role-chip'>"+d.level+"</span>").join("<br>")+
+      (session.role==="external"?"<p class='note'>Rol externo: los documentos confidenciales permanecen ocultos.</p>":"")+"</div>";
+  }).join("");
+}
+function renderMatching(){
+  if(session.role==="external"){matchingList.innerHTML="<p class='note'>Acceso no autorizado.</p>";return}
+  const items=[];
+  const buyers=opportunities.filter(o=>o.intent==="Comprar"||o.intent==="Invertir");
+  const targets=opportunities.filter(o=>o.intent==="Vender"||o.isMining);
+  buyers.forEach(b=>targets.forEach(t=>{
+    let score=0,reasons=[];
+    if(b.detail&&t.detail&&b.detail.toLowerCase()===t.detail.toLowerCase()){score+=55;reasons.push("sector/mineral compatible")}
+    if(b.country&&t.country&&b.country.toLowerCase()===t.country.toLowerCase()){score+=20;reasons.push("región compatible")}
+    if(b.need&&t.need&&b.need!==t.need){score+=10;reasons.push("necesidades potencialmente complementarias")}
+    if(score>=40)items.push({b,t,score,reasons});
+  }));
+  matchingList.innerHTML=items.length?items.sort((a,b)=>b.score-a.score).map(m=>"<div class='match-item'><b>"+m.b.code+" ↔ "+m.t.code+"</b><br><span class='match-score'>Compatibilidad preliminar: "+m.score+"%</span><br><small>"+m.reasons.join(" · ")+"</small></div>").join(""):"<p class='note'>Todavía no hay coincidencias suficientes. Registra perfiles complementarios para probar Matching VGG.</p>";
+}
+function openCase(code){
+  if(!session || session.role==="external"){alert("Este rol no tiene acceso al expediente interno.");return}
+  const o=opportunities.find(x=>x.code===code);if(!o)return;
+  caseTitle.textContent=o.code+" — Expediente VGG";
+  const opts=["Recibida","En revisión","Calificada","En contacto","Negociación","Cerrada","Archivada"].map(s=>"<option "+(s===o.status?"selected":"")+">"+s+"</option>").join("");
+  caseContent.innerHTML=
+    "<div class='detail-grid'><div class='detail-box'><b>Tipo</b><br>"+o.intent+"</div><div class='detail-box'><b>Estado</b><br><select id='caseStatus' style='margin-top:6px;width:100%;background:#071629;color:white;border:1px solid var(--line);padding:9px;border-radius:8px'>"+opts+"</select></div>"+
+    "<div class='detail-box'><b>Contacto</b><br>"+o.name+"<br>"+(o.company||"")+"<br><small>"+o.contact+"</small></div><div class='detail-box'><b>País / región</b><br>"+(o.country||"—")+"</div>"+
+    "<div class='detail-box'><b>Mineral / producto / sector</b><br>"+(o.detail||"—")+"</div><div class='detail-box'><b>Necesidad</b><br>"+(o.need||"—")+"</div></div>"+
+    "<div class='summary'><b>Resumen</b><br>"+o.desc+"</div>"+
+    "<div class='detail-grid' style='margin-top:10px'><div class='detail-box'><b>Responsable</b><br><input id='caseOwner' value='"+escapeHtml(o.owner)+"' style='margin-top:6px;width:100%;background:#071629;color:white;border:1px solid var(--line);padding:9px;border-radius:8px'></div>"+
+    "<div class='detail-box'><b>Prioridad</b><br><select id='casePriority' style='margin-top:6px;width:100%;background:#071629;color:white;border:1px solid var(--line);padding:9px;border-radius:8px'><option "+(o.priority==="Normal"?"selected":"")+">Normal</option><option "+(o.priority==="Alta"?"selected":"")+">Alta</option><option "+(o.priority==="Crítica"?"selected":"")+">Crítica</option></select></div></div>"+
+    "<div class='toolbar'><button class='btn gold' onclick=\"saveCase('"+o.code+"')\">Guardar cambios</button>"+(o.isMining?"<button class='btn blue' onclick=\"showDataRoomCase('"+o.code+"')\">Ver Data Room</button>":"")+"</div>"+
+    "<p class='note'>Creada: "+o.created+" · Datos DEMO persistentes localmente.</p>";
+  caseOverlay.classList.add('open');
+}
+function saveCase(code){
+  const o=opportunities.find(x=>x.code===code);if(!o)return;
+  o.status=caseStatus.value;o.owner=caseOwner.value.trim()||"Sin asignar";o.priority=casePriority.value;saveState();renderAll();openCase(code);
+}
+function showDataRoomCase(code){
+  const o=opportunities.find(x=>x.code===code);if(!o)return;
+  const docs=(o.docs||[]).map(d=>"• "+d.name+" — "+d.level).join("<br>");
+  caseContent.innerHTML+="<div class='summary'><b>Data Room DEMO</b><br>"+docs+"</div>";
+}
+function closeCase(){caseOverlay.classList.remove('open')}
+function showArea(id,btn){
+  if(!session)return;
+  if(session.role==="external" && id!=="docs"){alert("Este rol solo puede consultar su Data Room autorizado.");return}
+  if(id==="settings" && session.role!=="admin"){alert("Solo Administrador.");return}
+  showAreaDirect(id);document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
+}
+function showAreaDirect(id){
+  ['opps','mining','contacts','docs','matching','settings'].forEach(x=>document.getElementById('area-'+x).classList.add('hidden'));
+  document.getElementById('area-'+id).classList.remove('hidden');
+}
+function resetDemo(){
+  if(!confirm("¿Restablecer todos los datos DEMO de VGG en este navegador?"))return;
+  opportunities=[];counter=1;saveState();renderAll();
+}
+function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+renderSession();
+</script>
+</body>
+</html>
