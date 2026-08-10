@@ -301,8 +301,29 @@ function enforceRoleUI(){
   });
   if(session && session.role==="external") showAreaDirect('docs');
   if(session && session.role!=="external") showAreaDirect('opps');
+  function fenixAsh(){
+  for(let i=0;i<28;i++){
+    const ash=document.createElement('span');
+    ash.textContent=Math.random()>.65?'✦':'•';
+    ash.style.position='fixed';
+    ash.style.left=(45+Math.random()*10)+'vw';
+    ash.style.top=(45+Math.random()*10)+'vh';
+    ash.style.zIndex='99999';
+    ash.style.pointerEvents='none';
+    ash.style.color=Math.random()>.5?'#e9a15f':'#f6d28b';
+    ash.style.fontSize=(8+Math.random()*14)+'px';
+    document.body.appendChild(ash);
+    ash.animate([
+      {transform:'translate(0,0) scale(.4)',opacity:0},
+      {opacity:1,offset:.2},
+      {transform:`translate(${(Math.random()-.5)*500}px,${-120-Math.random()*350}px) scale(1.3)`,opacity:0}
+    ],{
+      duration:1200+Math.random()*1600,
+      easing:'ease-out'
+    }).onfinish=()=>ash.remove();
+  }
 }
-function openFenix(){fenixOverlay.classList.add('open')}
+function openFenix(){fenixOverlay.classList.add('open');fenixAsh();}
 function closeFenix(){fenixOverlay.classList.remove('open')}
 function setIntent(i){openFenix();chooseIntent(i)}
 function chooseIntent(i){
